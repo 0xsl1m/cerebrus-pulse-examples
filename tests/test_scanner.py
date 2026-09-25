@@ -39,6 +39,8 @@ def test_paid_scan_flags_divergence_and_extreme_funding(api, capsys):
     assert "SOL: no CEX-DEX data (HTTP 400" in out
     assert "SOL: no funding data (HTTP 404" in out
     assert "LINK: -32.6 bps (DEX premium)" in out  # |-32.6| >= 30
+    assert "Based on 2 of 3 coin(s); the others have no CEX-DEX data" in out
+    assert "Based on 2 of 3 coin(s); the others have no funding data" in out
     assert "BTC: +4.3" not in out  # 4.3 bps is under the threshold
     assert "LINK: +0.01000%/h (+87.6% a year) - crowded long" in out
     assert "Total: 1 divergences, 1 extreme funding" in out
@@ -68,3 +70,24 @@ def test_a_spend_limit_mid_scan_keeps_the_rows_already_paid_for(wallet, monkeypa
     assert "CEREBRUS_WALLET_KEY" not in out  # the wallet is set and paid
     assert "The scan stopped early: the table covers 2 of 3 coin(s)." in out
     assert "Spent by this run: $0.05 USDC" in out
+
+
+def test_no_market_conclusion_without_data(api, capsys):
+    not_covered = httpx.Response(400, json={"detail": "No CEX-DEX data. Available tokens: []"})
+    api.routes["/cex-dex/BTC"] = api.routes["/cex-dex/ETH"] = not_covered
+
+    assert sc.main(["BTC", "ETH"]) == 0  # /funding/ETH has no fixture: 404
+    out = capsys.readouterr().out
+    assert "No CEX-DEX data for any coin" in out
+    assert "tightly arbitraged" not in out
+    assert "None found - funding rates are balanced" in out  # BTC funding is 10.95% a year
+    assert "Based on 1 of 2 coin(s); the others have no funding data" in out
+    assert "Total: 0 divergences, 0 extreme funding" in out
+
+
+def test_no_funding_conclusion_without_funding_data(api, capsys):
+    api.routes.pop("/funding/BTC")
+    assert sc.main(["BTC"]) == 0
+    out = capsys.readouterr().out
+    assert "No funding data for any coin" in out
+    assert "balanced" not in out

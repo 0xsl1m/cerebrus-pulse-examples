@@ -122,6 +122,9 @@ def report(rows, min_bps, min_apr, checked_divergence=True):
     extreme = sorted((r for r in rows if r["rate"] is not None
                       and abs(annualized_pct(r["rate"])) >= min_apr),
                      key=lambda r: abs(r["rate"]), reverse=True)
+    # A conclusion only covers the coins that returned data.
+    measured = sum(r["spread_bps"] is not None for r in rows)
+    funded = sum(r["rate"] is not None for r in rows)
 
     print()
     print("=" * 60)
@@ -129,24 +132,32 @@ def report(rows, min_bps, min_apr, checked_divergence=True):
     print("=" * 60)
     if not checked_divergence:
         print("  Not checked: CEX-DEX data is paid only")
+    elif not measured:
+        print("  No CEX-DEX data for any coin")
     elif divergences:
         for r in divergences:
             side = "DEX premium" if r["direction"] == "dex_premium" else "CEX premium"
             print(f"  {r['coin']:>6s}: {r['spread_bps']:+.1f} bps ({side})")
     else:
         print("  None found - markets are tightly arbitraged")
+    if checked_divergence and 0 < measured < len(rows):
+        print(f"  Based on {measured} of {len(rows)} coin(s); the others have no CEX-DEX data")
 
     print()
     print("=" * 60)
     print(f"EXTREME FUNDING (at least {min_apr:g}% annualized)")
     print("=" * 60)
-    if extreme:
+    if not funded:
+        print("  No funding data for any coin")
+    elif extreme:
         for r in extreme:
             bias = "crowded long" if r["rate"] > 0 else "crowded short"
             apr = annualized_pct(r["rate"])
             print(f"  {r['coin']:>6s}: {r['rate']:+.5%}/h ({apr:+.1f}% a year) - {bias}")
     else:
         print("  None found - funding rates are balanced")
+    if 0 < funded < len(rows):
+        print(f"  Based on {funded} of {len(rows)} coin(s); the others have no funding data")
 
     print(f"\nTotal: {len(divergences)} divergences, {len(extreme)} extreme funding")
 
