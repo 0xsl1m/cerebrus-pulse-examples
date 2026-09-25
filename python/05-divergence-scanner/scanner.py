@@ -93,7 +93,7 @@ def scan(coins, get_divergence, get_funding_rate):
     return rows
 
 
-def report(rows, min_bps, min_apr):
+def report(rows, min_bps, min_apr, checked_divergence=True):
     print(f"\n  {'Coin':<6s}{'CEX-DEX bps':>12s}  {'Premium':<8s}{'Funding/h':>12s}{'APR %':>9s}")
     print(f"  {'-' * 47}")
     for r in rows:
@@ -114,7 +114,9 @@ def report(rows, min_bps, min_apr):
     print("=" * 60)
     print(f"CEX-DEX DIVERGENCES (at least {min_bps:g} bps)")
     print("=" * 60)
-    if divergences:
+    if not checked_divergence:
+        print("  Not checked: CEX-DEX data is paid only")
+    elif divergences:
         for r in divergences:
             side = "DEX premium" if r["direction"] == "dex_premium" else "CEX premium"
             print(f"  {r['coin']:>6s}: {r['spread_bps']:+.1f} bps ({side})")
@@ -178,7 +180,8 @@ def main(argv=None):
         print("  Run with --dry-run for the free version, or set CEREBRUS_WALLET_KEY to pay.")
         return 2
 
-    report(rows, args.min_divergence_bps, args.min_funding_apr)
+    report(rows, args.min_divergence_bps, args.min_funding_apr,
+           checked_divergence=get_divergence is not None)
     if client is not None and client.can_pay:
         print(f"Spent by this run: ${client.spent_usd} USDC")
     return 0

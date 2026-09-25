@@ -14,6 +14,8 @@ def test_dry_run_reads_funding_from_the_free_demo(api, capsys):
     assert "costs about $0.03 USDC" in out
     # 1.25e-05 per hour is 10.95% a year
     assert "BTC              -  -          +0.00125%   +10.95" in out
+    assert "Not checked: CEX-DEX data is paid only" in out
+    assert "tightly arbitraged" not in out  # no CEX-DEX call was made
     assert "Total: 0 divergences, 0 extreme funding" in out
 
 
