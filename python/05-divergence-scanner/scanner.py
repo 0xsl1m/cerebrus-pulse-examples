@@ -36,6 +36,7 @@ from cerebrus_pulse import (
     INDICATIVE_PRICES_USD,
     CerebrusPulse,
     CerebrusPulseError,
+    PaymentBlocked,
     PaymentRequired,
     PulseResponse,
 )
@@ -64,6 +65,11 @@ def explain_payment(e):
     print(f"\n  Not paid: {e.detail}")
     for term in e.terms:
         print(f"  The API asks ${term.price_usd} USDC on {term.network}, paid to {term.pay_to}")
+    if isinstance(e, PaymentBlocked):  # a wallet is set; this client's spend limits said no
+        print("  Nothing was signed. The limits are CEREBRUS_MAX_SPEND_USD (total per run), "
+              "CEREBRUS_MAX_PAYMENT_USD (per call) and CEREBRUS_ALLOWED_PAYTO.")
+    elif type(e) is PaymentRequired:  # no wallet
+        print("  Run with --dry-run for the free version, or set CEREBRUS_WALLET_KEY to pay.")
 
 
 def annualized_pct(hourly_rate):
@@ -71,7 +77,12 @@ def annualized_pct(hourly_rate):
 
 
 def scan(coins, get_divergence, get_funding_rate):
-    """One row per coin. A failed call leaves its field None; a 402 stops the scan."""
+    """Rows for the coins scanned, and the 402 that stopped the scan (None if none did).
+
+    A failed call leaves its field None. A payment that was not made (no wallet,
+    or a spend limit said no) stops the scan; the rows so far, which were paid
+    for, are still returned.
+    """
     rows = []
     for coin in coins:
         row = {"coin": coin, "spread_bps": None, "direction": None, "rate": None}
@@ -79,18 +90,20 @@ def scan(coins, get_divergence, get_funding_rate):
             try:
                 div = get_divergence(coin).divergence
                 row["spread_bps"], row["direction"] = div.spread_bps, div.direction
-            except PaymentRequired:
-                raise
+            except PaymentRequired as e:
+                return rows, e
             except (CerebrusPulseError, httpx.HTTPError) as e:
                 print(f"  {coin}: no CEX-DEX data ({e})")
         try:
             row["rate"] = get_funding_rate(coin)
-        except PaymentRequired:
-            raise
+        except PaymentRequired as e:
+            if row["spread_bps"] is not None:  # its CEX-DEX call was paid
+                rows.append(row)
+            return rows, e
         except (CerebrusPulseError, httpx.HTTPError) as e:
             print(f"  {coin}: no funding data ({e})")
         rows.append(row)
-    return rows
+    return rows, None
 
 
 def report(rows, min_bps, min_apr, checked_divergence=True):
@@ -173,18 +186,17 @@ def main(argv=None):
         get_divergence = client.cex_dex
         get_funding_rate = lambda coin: client.funding(coin).current_rate
 
-    try:
-        rows = scan(coins, get_divergence, get_funding_rate)
-    except PaymentRequired as e:  # also PaymentBlocked: a spend limit said no
-        explain_payment(e)
-        print("  Run with --dry-run for the free version, or set CEREBRUS_WALLET_KEY to pay.")
-        return 2
-
-    report(rows, args.min_divergence_bps, args.min_funding_apr,
-           checked_divergence=get_divergence is not None)
+    rows, stopped = scan(coins, get_divergence, get_funding_rate)
+    if rows:
+        report(rows, args.min_divergence_bps, args.min_funding_apr,
+               checked_divergence=get_divergence is not None)
+    if stopped is not None:  # also PaymentBlocked: a spend limit said no
+        explain_payment(stopped)
+        if rows:
+            print(f"  The scan stopped early: the table covers {len(rows)} of {len(coins)} coin(s).")
     if client is not None and client.can_pay:
         print(f"Spent by this run: ${client.spent_usd} USDC")
-    return 0
+    return 0 if stopped is None else 2
 
 
 if __name__ == "__main__":

@@ -28,6 +28,7 @@ from cerebrus_pulse import (
     INDICATIVE_PRICES_USD,
     CerebrusPulse,
     CerebrusPulseError,
+    PaymentBlocked,
     PaymentRequired,
     PulseResponse,
 )
@@ -65,6 +66,11 @@ def explain_payment(e):
     print(f"\n  Not paid: {e.detail}")
     for term in e.terms:
         print(f"  The API asks ${term.price_usd} USDC on {term.network}, paid to {term.pay_to}")
+    if isinstance(e, PaymentBlocked):  # a wallet is set; this client's spend limits said no
+        print("  Nothing was signed. The limits are CEREBRUS_MAX_SPEND_USD (total per run), "
+              "CEREBRUS_MAX_PAYMENT_USD (per call) and CEREBRUS_ALLOWED_PAYTO.")
+    elif type(e) is PaymentRequired:  # no wallet
+        print("  Run with --dry-run for the free version, or set CEREBRUS_WALLET_KEY to pay.")
 
 
 def cell(value):
@@ -146,7 +152,6 @@ def main(argv=None):
             analyze(fetch(coin), timeframes)
         except PaymentRequired as e:  # also PaymentBlocked: a spend limit said no
             explain_payment(e)
-            print("  Run with --dry-run for the free version, or set CEREBRUS_WALLET_KEY to pay.")
             return 2
         except (CerebrusPulseError, httpx.HTTPError) as e:
             print(f"\n  {coin}: error - {e}")

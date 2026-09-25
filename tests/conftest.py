@@ -34,6 +34,7 @@ PRICES = {"/pulse/": 25_000, "/sentiment": 10_000, "/funding/": 10_000,
           "/cex-dex/": 20_000, "/liquidations/": 30_000}
 BASE_USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
 PAY_TO = DEFAULT_ALLOWED_PAYTO  # the SDK's default payee, so a payTo change is made once
+DUMMY_KEY = "0x" + "11" * 32  # obviously fake, never funded: signs locally, can never settle
 
 
 def load_example(relpath: str):
@@ -51,23 +52,30 @@ def payment_required(path: str) -> httpx.Response:
     terms = {"x402Version": 2, "accepts": [{
         "scheme": "exact", "network": "eip155:8453", "asset": BASE_USDC,
         "amount": str(amount), "payTo": PAY_TO, "maxTimeoutSeconds": 300,
+        "extra": {"name": "USD Coin", "version": "2"},
     }]}
     header = base64.b64encode(json.dumps(terms).encode()).decode()
     return httpx.Response(402, headers={"PAYMENT-REQUIRED": header}, json={})
 
 
 class FakeAPI:
-    """Answers from the fixtures; ``unpaid`` makes every paid path answer 402."""
+    """Answers from the fixtures.
+
+    ``unpaid`` makes every paid path answer 402. ``paying`` makes a paid path
+    answer 402 until the request carries an x402 PAYMENT-SIGNATURE.
+    """
 
     def __init__(self):
         self.routes: dict[str, object] = {k: v for k, v in RESPONSES.items() if k.startswith("/")}
         self.unpaid = False
+        self.paying = False
         self.requests: list[httpx.Request] = []
 
     def handle(self, request: httpx.Request) -> httpx.Response:
         self.requests.append(request)
         path = request.url.path
-        if self.unpaid and path.startswith(PAID_PREFIXES):
+        signed = bool(request.headers.get("PAYMENT-SIGNATURE"))
+        if path.startswith(PAID_PREFIXES) and (self.unpaid or (self.paying and not signed)):
             return payment_required(path)
         body = self.routes.get(path)
         if isinstance(body, httpx.Response):
@@ -102,3 +110,15 @@ def api(monkeypatch):
                  "CEREBRUS_ALLOWED_PAYTO", "CEREBRUS_AGENT_MODEL", "OPENAI_API_KEY"):
         monkeypatch.delenv(name, raising=False)
     return fake
+
+
+@pytest.fixture
+def wallet(api, monkeypatch):
+    """CEREBRUS_WALLET_KEY set to a fake key, and an API that wants payment first.
+
+    The examples then pay for real with the x402 client: payments are signed
+    locally and the fake API accepts them. Nothing can settle.
+    """
+    monkeypatch.setenv("CEREBRUS_WALLET_KEY", DUMMY_KEY)
+    api.paying = True
+    return api

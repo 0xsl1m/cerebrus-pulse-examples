@@ -46,3 +46,12 @@ def test_without_a_wallet_it_reports_the_price(api, capsys):
     assert mt.main(["BTC", "ETH"]) == 2
     assert api.paid_paths == ["/pulse/BTC"]
     assert "The API asks $0.025 USDC" in capsys.readouterr().out
+
+
+def test_a_spend_limit_is_explained_without_asking_for_a_wallet(wallet, monkeypatch, capsys):
+    monkeypatch.setenv("CEREBRUS_MAX_SPEND_USD", "0")
+    assert mt.main(["BTC"]) == 2
+    assert not any(r.headers.get("PAYMENT-SIGNATURE") for r in wallet.requests)
+    out = capsys.readouterr().out
+    assert "Nothing was signed" in out and "CEREBRUS_MAX_SPEND_USD" in out
+    assert "CEREBRUS_WALLET_KEY" not in out

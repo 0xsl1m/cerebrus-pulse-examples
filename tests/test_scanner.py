@@ -48,4 +48,23 @@ def test_a_402_stops_the_scan(api, capsys):
     api.unpaid = True
     assert sc.main([]) == 2
     assert api.paid_paths == ["/cex-dex/BTC"]
-    assert "The API asks $0.02 USDC" in capsys.readouterr().out
+    out = capsys.readouterr().out
+    assert "The API asks $0.02 USDC" in out
+    assert "set CEREBRUS_WALLET_KEY to pay" in out
+    assert "CEX-DEX DIVERGENCES" not in out  # nothing was scanned, so no report
+
+
+def test_a_spend_limit_mid_scan_keeps_the_rows_already_paid_for(wallet, monkeypatch, capsys):
+    monkeypatch.setenv("CEREBRUS_MAX_SPEND_USD", "0.05")
+    assert sc.main(["BTC", "ETH", "SOL"]) == 2
+    signed = [r.url.path for r in wallet.requests if r.headers.get("PAYMENT-SIGNATURE")]
+    assert signed == ["/cex-dex/BTC", "/funding/BTC", "/cex-dex/ETH"]
+    assert wallet.paid_paths[-1] == "/funding/ETH"  # refused unsigned; SOL never asked
+    out = capsys.readouterr().out
+    assert "  BTC           +4.3  CEX        +0.00125%   +10.95" in out
+    assert "  ETH           +4.0  CEX                -        -" in out
+    assert "budget reached" in out
+    assert "Nothing was signed" in out and "CEREBRUS_MAX_SPEND_USD" in out
+    assert "CEREBRUS_WALLET_KEY" not in out  # the wallet is set and paid
+    assert "The scan stopped early: the table covers 2 of 3 coin(s)." in out
+    assert "Spent by this run: $0.05 USDC" in out
