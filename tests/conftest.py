@@ -18,6 +18,7 @@ import pathlib
 
 import httpx
 import pytest
+from cerebrus_pulse.payment import DEFAULT_ALLOWED_PAYTO
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 RESPONSES = json.loads((ROOT / "tests" / "fixtures" / "api_responses.json").read_text(encoding="utf-8"))
@@ -32,7 +33,7 @@ FREE_PATHS = ("/health", "/demo/")
 PRICES = {"/pulse/": 25_000, "/sentiment": 10_000, "/funding/": 10_000,
           "/cex-dex/": 20_000, "/liquidations/": 30_000}
 BASE_USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
-PAY_TO = "0xfDFB12764c76B5113153acaa2317081F4Abc2a88"
+PAY_TO = DEFAULT_ALLOWED_PAYTO  # the SDK's default payee, so a payTo change is made once
 
 
 def load_example(relpath: str):
