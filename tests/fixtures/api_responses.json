@@ -1,0 +1,430 @@
+{
+ "_meta": {
+  "source": "Engine output copied from cerebrus-pulse-python tests/fixtures/engine_responses.json (real engine output on feeds captured 2026-09-24). /cex-dex rows are the engine's transform of the captured cex_dex_latest.json. /demo adds the gateway's demo meta (server.py demo()). /health follows server.py health()."
+ },
+ "/health": {
+  "status": "ok",
+  "engine": "available",
+  "payments": "active",
+  "ledger": "writable",
+  "kill_switch": "enabled",
+  "a2a": "enabled",
+  "a2a_payment": "http route only",
+  "networks": [
+   "eip155:8453"
+  ],
+  "paid_routes": 13,
+  "engine_pool": "warm",
+  "settlements_since_start": 0,
+  "concurrency": {
+   "in_use": 0,
+   "max": 3
+  },
+  "version": "1.4.0"
+ },
+ "/demo/BTC": {
+  "coin": "BTC",
+  "timestamp_iso": "2026-09-24T17:05:00Z",
+  "price": {
+   "current": 84512.5
+  },
+  "timeframes": {
+   "1h": {
+    "indicators": {
+     "rsi_14": 49.16,
+     "rsi_zone": "neutral",
+     "atr_14": 495.286126,
+     "atr_pct": 0.5881,
+     "ema_20": 84134.27882,
+     "ema_50": 84555.185241,
+     "ema_200": 82476.178645,
+     "vwap_20": 84001.13142,
+     "zscore_100": -0.173,
+     "bollinger": {
+      "upper": 84796.137043,
+      "middle": 84040.55,
+      "lower": 83284.962957,
+      "width_pct": 1.7981,
+      "position_pct": 0.6194
+     },
+     "trend": {
+      "direction": 1,
+      "label": "weak_bullish",
+      "ema_stack": "mixed"
+     }
+    },
+    "candle_freshness_seconds": 3900.8
+   },
+   "4h": {
+    "indicators": {
+     "rsi_14": 52.4,
+     "rsi_zone": "neutral",
+     "atr_14": 753.689872,
+     "atr_pct": 0.8946,
+     "ema_20": 84330.064688,
+     "ema_50": 82495.192247,
+     "ema_200": 78020.603694,
+     "vwap_20": 84900.495116,
+     "zscore_100": 1.384,
+     "bollinger": {
+      "upper": 87509.088246,
+      "middle": 85386.3,
+      "lower": 83263.511754,
+      "width_pct": 4.9722,
+      "position_pct": 0.2319
+     },
+     "trend": {
+      "direction": 1,
+      "label": "weak_bullish",
+      "ema_stack": "mixed"
+     }
+    },
+    "candle_freshness_seconds": 3900.8
+   }
+  },
+  "derivatives": {
+   "funding_rate": 1.25e-05,
+   "funding_annualized_pct": 1.37,
+   "open_interest": 39370.3015,
+   "impact_bid": 84485.4,
+   "impact_ask": 84500.0,
+   "spread_bps": 1.73
+  },
+  "regime": {
+   "current": "unknown",
+   "as_of": 0
+  },
+  "confluence": {
+   "score": 0.62,
+   "bias": "bullish",
+   "signals": {
+    "rsi": "neutral",
+    "trend": "bullish",
+    "bollinger": "neutral",
+    "zscore": "neutral"
+   },
+   "bullish_count": 1,
+   "bearish_count": 0,
+   "per_timeframe": {
+    "1h": {
+     "score": 0.62,
+     "bias": "bullish",
+     "signals": {
+      "rsi": "neutral",
+      "trend": "bullish",
+      "bollinger": "neutral",
+      "zscore": "neutral"
+     },
+     "bullish_count": 1,
+     "bearish_count": 0
+    },
+    "4h": {
+     "score": 0.62,
+     "bias": "bullish",
+     "signals": {
+      "rsi": "neutral",
+      "trend": "bullish",
+      "bollinger": "neutral",
+      "zscore": "neutral"
+     },
+     "bullish_count": 1,
+     "bearish_count": 0
+    }
+   },
+   "aligned": true,
+   "alignment_score": 1.0
+  },
+  "meta": {
+   "provider": "Cerebrus Pulse",
+   "offering": "cerebrus_pulse",
+   "execution_ms": 0.0,
+   "coins_available": 51,
+   "data_age_seconds": 60.0,
+   "demo": true,
+   "cache_ttl_seconds": 60,
+   "upgrade": "Use /pulse/{coin} with x402 for real-time data, custom timeframes, and higher rate limits"
+  }
+ },
+ "/pulse/BTC": {
+  "coin": "BTC",
+  "timestamp_iso": "2026-09-24T17:05:00Z",
+  "price": {
+   "current": 84512.5
+  },
+  "timeframes": {
+   "1h": {
+    "indicators": {
+     "rsi_14": 49.16,
+     "rsi_zone": "neutral",
+     "atr_14": 495.286126,
+     "atr_pct": 0.5881,
+     "ema_20": 84134.27882,
+     "ema_50": 84555.185241,
+     "ema_200": 82476.178645,
+     "vwap_20": 84001.13142,
+     "zscore_100": -0.173,
+     "bollinger": {
+      "upper": 84796.137043,
+      "middle": 84040.55,
+      "lower": 83284.962957,
+      "width_pct": 1.7981,
+      "position_pct": 0.6194
+     },
+     "trend": {
+      "direction": 1,
+      "label": "weak_bullish",
+      "ema_stack": "mixed"
+     }
+    },
+    "candle_freshness_seconds": 3900.8
+   },
+   "4h": {
+    "indicators": {
+     "rsi_14": 52.4,
+     "rsi_zone": "neutral",
+     "atr_14": 753.689872,
+     "atr_pct": 0.8946,
+     "ema_20": 84330.064688,
+     "ema_50": 82495.192247,
+     "ema_200": 78020.603694,
+     "vwap_20": 84900.495116,
+     "zscore_100": 1.384,
+     "bollinger": {
+      "upper": 87509.088246,
+      "middle": 85386.3,
+      "lower": 83263.511754,
+      "width_pct": 4.9722,
+      "position_pct": 0.2319
+     },
+     "trend": {
+      "direction": 1,
+      "label": "weak_bullish",
+      "ema_stack": "mixed"
+     }
+    },
+    "candle_freshness_seconds": 3900.8
+   }
+  },
+  "derivatives": {
+   "funding_rate": 1.25e-05,
+   "funding_annualized_pct": 1.37,
+   "open_interest": 39370.3015,
+   "impact_bid": 84485.4,
+   "impact_ask": 84500.0,
+   "spread_bps": 1.73
+  },
+  "regime": {
+   "current": "unknown",
+   "as_of": 0
+  },
+  "confluence": {
+   "score": 0.62,
+   "bias": "bullish",
+   "signals": {
+    "rsi": "neutral",
+    "trend": "bullish",
+    "bollinger": "neutral",
+    "zscore": "neutral"
+   },
+   "bullish_count": 1,
+   "bearish_count": 0,
+   "per_timeframe": {
+    "1h": {
+     "score": 0.62,
+     "bias": "bullish",
+     "signals": {
+      "rsi": "neutral",
+      "trend": "bullish",
+      "bollinger": "neutral",
+      "zscore": "neutral"
+     },
+     "bullish_count": 1,
+     "bearish_count": 0
+    },
+    "4h": {
+     "score": 0.62,
+     "bias": "bullish",
+     "signals": {
+      "rsi": "neutral",
+      "trend": "bullish",
+      "bollinger": "neutral",
+      "zscore": "neutral"
+     },
+     "bullish_count": 1,
+     "bearish_count": 0
+    }
+   },
+   "aligned": true,
+   "alignment_score": 1.0
+  },
+  "meta": {
+   "provider": "Cerebrus Pulse",
+   "offering": "cerebrus_pulse",
+   "execution_ms": 0.0,
+   "coins_available": 51,
+   "data_age_seconds": 60.0
+  }
+ },
+ "/sentiment": {
+  "endpoint": "sentiment",
+  "sentiment": {
+   "label": "bullish",
+   "as_of": 1790269024.020345
+  },
+  "meta": {
+   "provider": "Cerebrus Pulse",
+   "offering": "pulse_sentiment",
+   "execution_ms": 0.0
+  }
+ },
+ "/funding/BTC": {
+  "coin": "BTC",
+  "records": 23,
+  "lookback_hours": 24,
+  "avg_funding_rate": 8.1e-06,
+  "annualized_pct": 0.89,
+  "current": 1.25e-05,
+  "min": -7.23e-06,
+  "max": 1.25e-05,
+  "positive_pct": 82.6,
+  "endpoint": "funding",
+  "meta": {
+   "provider": "Cerebrus Pulse",
+   "offering": "pulse_funding",
+   "execution_ms": 0.0
+  }
+ },
+ "/liquidations/BTC": {
+  "endpoint": "liquidations",
+  "coin": "BTC",
+  "timestamp_iso": "2026-09-24T17:05:00Z",
+  "price": 84512.5,
+  "liquidation_zones": {
+   "longs": [
+    {
+     "price": 83589.9,
+     "leverage": "50x",
+     "estimated_liq_usd": 216273369,
+     "proximity_pct": 1.09
+    },
+    {
+     "price": 82329.75,
+     "leverage": "25x",
+     "estimated_liq_usd": 540683423,
+     "proximity_pct": 2.58
+    },
+    {
+     "price": 78129.26,
+     "leverage": "10x",
+     "estimated_liq_usd": 648820108,
+     "proximity_pct": 7.55
+    }
+   ],
+   "shorts": [
+    {
+     "price": 85690.15,
+     "leverage": "25x",
+     "estimated_liq_usd": 291137228,
+     "proximity_pct": 1.39
+    },
+    {
+     "price": 89890.65,
+     "leverage": "10x",
+     "estimated_liq_usd": 349364674,
+     "proximity_pct": 6.36
+    },
+    {
+     "price": 97451.55,
+     "leverage": "5x",
+     "estimated_liq_usd": 291137228,
+     "proximity_pct": 15.31
+    }
+   ]
+  },
+  "summary": {
+   "cascade_risk": "HIGH",
+   "total_oi_usd": 3327282606,
+   "long_short_ratio": "65:35",
+   "total_at_risk_5pct": 1048094020,
+   "nearest_cluster": {
+    "side": "long",
+    "price": 83589.9,
+    "distance_pct": 1.09,
+    "estimated_volume": 216273369
+   }
+  },
+  "meta": {
+   "provider": "Cerebrus Pulse",
+   "offering": "pulse_liquidations",
+   "execution_ms": 0.0,
+   "data_age_seconds": 60.0,
+   "methodology": "estimated from OI, leverage tiers, funding-rate skew, and 24h VWAP entry"
+  }
+ },
+ "/cex-dex/BTC": {
+  "endpoint": "cex-dex",
+  "token": "BTC",
+  "timestamp_iso": "2026-09-24T16:59:05.418496+00:00",
+  "divergence": {
+   "cex_price": 84517.79,
+   "dex_price": 84481.7874,
+   "dex_source": "chainlink",
+   "spread_bps": 4.3,
+   "spread_pct": 0.043,
+   "direction": "cex_premium",
+   "interpretation": "CEX trading at premium to DEX"
+  },
+  "meta": {
+   "provider": "Cerebrus Pulse",
+   "offering": "pulse_cex_dex",
+   "execution_ms": 0.0,
+   "data_age_seconds": 355.4,
+   "refresh_interval_minutes": 5,
+   "cex_source": "coinbase"
+  }
+ },
+ "/cex-dex/ETH": {
+  "endpoint": "cex-dex",
+  "token": "ETH",
+  "timestamp_iso": "2026-09-24T16:59:05.418496+00:00",
+  "divergence": {
+   "cex_price": 2687.75,
+   "dex_price": 2686.6836,
+   "dex_source": "chainlink",
+   "spread_bps": 4.0,
+   "spread_pct": 0.04,
+   "direction": "cex_premium",
+   "interpretation": "CEX trading at premium to DEX"
+  },
+  "meta": {
+   "provider": "Cerebrus Pulse",
+   "offering": "pulse_cex_dex",
+   "execution_ms": 0.0,
+   "data_age_seconds": 355.4,
+   "refresh_interval_minutes": 5,
+   "cex_source": "coinbase"
+  }
+ },
+ "/cex-dex/LINK": {
+  "endpoint": "cex-dex",
+  "token": "LINK",
+  "timestamp_iso": "2026-09-24T16:59:05.418496+00:00",
+  "divergence": {
+   "cex_price": 12.96,
+   "dex_price": 13.0024,
+   "dex_source": "chainlink",
+   "spread_bps": -32.6,
+   "spread_pct": -0.326,
+   "direction": "dex_premium",
+   "interpretation": "DEX trading at premium to CEX"
+  },
+  "meta": {
+   "provider": "Cerebrus Pulse",
+   "offering": "pulse_cex_dex",
+   "execution_ms": 0.0,
+   "data_age_seconds": 355.4,
+   "refresh_interval_minutes": 5,
+   "cex_source": "coinbase"
+  }
+ }
+}

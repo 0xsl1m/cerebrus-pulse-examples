@@ -1,0 +1,6 @@
+# What the examples and their tests need. The tests mock the API, so they
+# never touch the network or a wallet.
+cerebrus-pulse>=0.4.0,<0.5
+langchain-cerebrus-pulse>=0.4.0,<0.5
+langchain>=1.0,<2
+pytest>=8
